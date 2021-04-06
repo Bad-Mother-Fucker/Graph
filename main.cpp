@@ -99,15 +99,15 @@ void test_int(){
     std::cout << "Il numero di archi del grafo e' " << g.get_size_edges() << "." << std::endl;
 
     std::cout <<  "Test dell'operatore di stream, copy constructor e operatore=..." << std::endl;
-    //std::cout << "g: " << g << " " << std::endl;
+    // std::cout << "g: " << g << " " << std::endl;
 
-    g.print_matrix();
+    //g.print_matrix();
 
     Graph<int> g2 = g;
    // std::cout << "copia di g (o=): " << g2 << " " << std::endl;
 
     Graph<int> g3(g);
-    //std::cout << "copia di g (cc) : " << g2 << " " << std::endl;
+   // std::cout << "copia di g (cc) : " << g2 << " " << std::endl;
 }
 
 

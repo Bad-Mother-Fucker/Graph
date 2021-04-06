@@ -161,8 +161,8 @@ private:
         if(new_num_nodes > num_nodes) matrix[new_num_nodes-1][new_num_nodes-1] = false;
 
 
-        std::cout<<"Realloc matrix \n";
-        print_matrix();
+       // std::cout<<"Realloc matrix \n";
+        //print_matrix();
 
     }
 
@@ -210,6 +210,7 @@ private:
         }
 
         reallocMatrix(num_nodes-1);
+        num_nodes--;
 
     }
 
@@ -458,10 +459,18 @@ public:
         const_iterator i = begin();
 
         std::cout<<"\t";
+        /*
         for ( ; i!= end(); i++){
             std::cout<<i -> _data<<"\t";
         }
         std::cout<<endl;
+        */
+
+        Node<T> *temp = _headN;
+        while (temp != nullptr) {
+            std::cout<<temp -> _data<<"\t";
+            temp = temp -> _next;
+        }
 
         i= begin();
 
