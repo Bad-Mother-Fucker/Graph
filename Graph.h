@@ -25,7 +25,7 @@ private:
 
     // DATI MEMBRO DEL GRAFO
     Node<T>* _headN; 		 ///< testa della lista dei nodi
-    int** matrix; ///< Matrice di adiacenza del grafo
+    bool** matrix; ///< Matrice di adiacenza del grafo
     size_type num_nodes; ///< numero di nodi
     size_type num_edges; ///< numero di archi
 
@@ -124,7 +124,7 @@ private:
     */
     void safe_remove_edge(const T &value1, const T &value2){
 
-        matrix[getNodeIndex(value1)][getNodeIndex(value2)] = 0;
+        matrix[getNodeIndex(value1)][getNodeIndex(value2)] = false;
 
     }
 
@@ -139,34 +139,27 @@ private:
 
 
         if (matrix == nullptr) {
-            matrix = new int* [new_num_nodes];
+            matrix = new bool* [new_num_nodes];
             for(int i=0;i<new_num_nodes;i++)
-                matrix[i] = new int[new_num_nodes];
+                matrix[i] = new bool[new_num_nodes];
         } else {
-            int **newMatrix = new int* [new_num_nodes];
+            bool **newMatrix = new bool* [new_num_nodes];
 
             for(int i=0;i<new_num_nodes;i++)
-                newMatrix[i] = new int[new_num_nodes];
+                newMatrix[i] = new bool[new_num_nodes];
 
-            for(int i =0; i< std::min(num_nodes, new_num_nodes); i++){
-                std::copy(matrix[i], matrix[i] + std::min(num_nodes,new_num_nodes), newMatrix[i]);
-            }
+           int num = std::min(num_nodes,new_num_nodes);
 
-            std::copy(matrix, matrix + std::min(num_nodes,new_num_nodes), newMatrix);
+           std::copy(&matrix[0][0], &matrix[0][0]+(num*num),&newMatrix[0][0]);
 
-            for(int i=0;i<num_nodes;i++)
-                delete [] matrix[i];
-
-            delete [] matrix;
-
+            //Delete matrix before reassigning
 
             matrix = newMatrix;
 
         }
 
-        matrix[num_nodes][num_nodes] = 0;
+        if(new_num_nodes > num_nodes) matrix[new_num_nodes-1][new_num_nodes-1] = false;
 
-        num_nodes = new_num_nodes;
 
         std::cout<<"Realloc matrix \n";
         print_matrix();
@@ -204,14 +197,16 @@ private:
 
     void update_matrix(const int &node) {
 
-        for (int i = node; i < num_nodes; i++) {
-            matrix[i] = matrix[i+1];
-        }
+
 
         for(int i = 0; i <num_nodes; i++){
             for (int j = node; j<num_nodes; j++){
                 matrix[i][j] = matrix[i][j+1];
             }
+        }
+
+        for (int i = node; i < num_nodes; i++) {
+            matrix[i] = matrix[i+1];
         }
 
         reallocMatrix(num_nodes-1);
@@ -239,6 +234,19 @@ public:
     }
 
     /**
+   COSTRUTTORE DI DEFAULT di un grafo
+   */
+    Graph(int numNodes) {
+        this->num_nodes = numNodes;
+        matrix = new bool*[numNodes];
+        for (int i = 0; i < numNodes; i++) {
+            matrix[i] = new bool[numNodes];
+            for (int j = 0; j < numNodes; j++)
+                matrix[i][j] = false;
+        }
+    }
+
+    /**
     DISTRUTTORE di un grafo
     */
     ~Graph() {
@@ -254,7 +262,6 @@ public:
 
         // Delego il lavoro alla funzione add utilizzando un meccanismo di error recovery
         Node<T> *tmpN = other._headN;
-        Edge<T> *tmpE = other._headE;
 
         try
         {
@@ -264,11 +271,7 @@ public:
                 tmpN = tmpN -> _next;
             }
 
-            while(tmpE!=0)
-            {
-                add_edge(tmpE -> _pair.src(), tmpE -> _pair.dst());
-                tmpE = tmpE -> _next;
-            }
+
 
         }
         catch(...)
@@ -386,7 +389,7 @@ public:
     void add_edge(const T &value1, const T &value2){
 
         if(check_E(value1, value2)==0 && check_E(value2, value1)==0){
-            matrix[getNodeIndex(value1)][getNodeIndex(value2)] = 1;
+            matrix[getNodeIndex(value1)][getNodeIndex(value2)] = true;
             num_edges++;
         }
         else {
@@ -463,10 +466,16 @@ public:
         i= begin();
 
         for(int k = 0; k < num_nodes; k++){
-            std::cout<<i -> _data<<"\t";
+
+            if (i != end()){
+                std::cout<<i -> _data<<"\t";
+                i++;
+            }
+
             for (int j = 0; j<num_nodes; j++ ){
                 std::cout<<matrix[k][j]<<"\t";
             }
+            std::cout<<endl;
         }
 
     }
