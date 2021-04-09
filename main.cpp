@@ -24,6 +24,9 @@ void test_int(){
         g.add_node(5);
         g.add_node(7);
         g.add_node(6);
+        g.add_node(2);
+        g.add_node(1);
+        g.add_node(3);
         std::cout << "Aggiunta di un ulteriore nodo 0..." << std::endl;
         g.add_node(0); // Genera eccezione
     }
@@ -34,8 +37,8 @@ void test_int(){
     try{
         std::cout << "Aggiunta degli archi <5,7>,<0,0>,<0,6>..." << std::endl;
         g.add_edge(5,7);
-        g.add_edge(0,0);
-        g.add_edge(0,6);
+        g.add_edge(2,1);
+        g.add_edge(3,6);
         std::cout << "Aggiunta di un ulteriore arco <7,5>..." << std::endl;
         g.add_edge(7,5); // Genera eccezione
     }
@@ -62,6 +65,17 @@ void test_int(){
         std::cout << e.what() << std::endl;
     }
 
+    std::cout <<  "Test dell'operatore di stream, copy constructor e operatore=..." << std::endl;
+     std::cout << "g: \n" << g << " " << std::endl;
+
+
+    Graph<int> g2 = g;
+     std::cout << "copia di g (o=): \n"<< g2 << " " << std::endl;
+
+    Graph<int> g3(g);
+    std::cout << "copia di g (cc) : \n" << g2 << " " << std::endl;
+
+
     try{
         std::cout << "Test rimozione di 5..." << std::endl;
         g.remove_node(5);
@@ -73,6 +87,8 @@ void test_int(){
     catch(key_not_found &e){
         std::cout << e.what() << std::endl;
     }
+
+
 
     try{
         std::cout << "Test rimozione di 90..." << std::endl;
@@ -98,16 +114,8 @@ void test_int(){
     std::cout << "Il numero di nodi del grafo e' " << g.get_size_nodes() << "." << std::endl;
     std::cout << "Il numero di archi del grafo e' " << g.get_size_edges() << "." << std::endl;
 
-    std::cout <<  "Test dell'operatore di stream, copy constructor e operatore=..." << std::endl;
-    // std::cout << "g: " << g << " " << std::endl;
 
-    //g.print_matrix();
 
-    Graph<int> g2 = g;
-   // std::cout << "copia di g (o=): " << g2 << " " << std::endl;
-
-    Graph<int> g3(g);
-   // std::cout << "copia di g (cc) : " << g2 << " " << std::endl;
 }
 
 

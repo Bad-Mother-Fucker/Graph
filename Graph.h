@@ -12,7 +12,6 @@
 #include <cstddef>		// contiene std::ptrdiff_t
 #include <algorithm>
 #include <iostream>
-#include "Edge.h"
 #include "Node.h"
 #include "Exceptions.h"
 
@@ -24,7 +23,7 @@ private:
     typedef unsigned int size_type; ///< Tipo che definisce il numero dei nodi e degli archi
 
     // DATI MEMBRO DEL GRAFO
-    Node<T>* _headN; 		 ///< testa della lista dei nodi
+    Node<T>* _headN; ///< testa della lista dei nodi
     bool** matrix; ///< Matrice di adiacenza del grafo
     size_type num_nodes; ///< numero di nodi
     size_type num_edges; ///< numero di archi
@@ -136,8 +135,6 @@ private:
     */
     void reallocMatrix(size_type new_num_nodes) {
 
-
-
         if (matrix == nullptr) {
             matrix = new bool* [new_num_nodes];
             for(int i=0;i<new_num_nodes;i++)
@@ -150,9 +147,23 @@ private:
 
            int num = std::min(num_nodes,new_num_nodes);
 
-           std::copy(&matrix[0][0], &matrix[0][0]+(num*num),&newMatrix[0][0]);
+           //Copio la vecchia matrice nella nuova
 
-            //Delete matrix before reassigning
+           for(int i = 0; i< num; i++) {
+               for(int j = 0; j< num; j++) {
+                   newMatrix[i][j] = matrix[i][j];
+               }
+           }
+
+            //Elimino la matrice inutilizzata prima di riassegnarla al nuovo puntatore
+
+            for(int i = 0; i<num; i++){
+                delete[] matrix [i];
+
+            }
+
+            delete [] matrix;
+
 
             matrix = newMatrix;
 
@@ -160,9 +171,6 @@ private:
 
         if(new_num_nodes > num_nodes) matrix[new_num_nodes-1][new_num_nodes-1] = false;
 
-
-       // std::cout<<"Realloc matrix \n";
-        //print_matrix();
 
     }
 
@@ -197,8 +205,6 @@ private:
 
     void update_matrix(const int &node) {
 
-
-
         for(int i = 0; i <num_nodes; i++){
             for (int j = node; j<num_nodes; j++){
                 matrix[i][j] = matrix[i][j+1];
@@ -228,24 +234,17 @@ private:
 
 public:
 
+    friend ostream& operator<<(ostream& os, Graph<T>g ) {
+        return g.print_matrix(os);
+    }
+
     /**
     COSTRUTTORE DI DEFAULT di un grafo
     */
     Graph(): _headN(nullptr), num_nodes(0), num_edges(0), matrix(nullptr){
     }
 
-    /**
-   COSTRUTTORE DI DEFAULT di un grafo
-   */
-    Graph(int numNodes) {
-        this->num_nodes = numNodes;
-        matrix = new bool*[numNodes];
-        for (int i = 0; i < numNodes; i++) {
-            matrix[i] = new bool[numNodes];
-            for (int j = 0; j < numNodes; j++)
-                matrix[i][j] = false;
-        }
-    }
+
 
     /**
     DISTRUTTORE di un grafo
@@ -261,7 +260,6 @@ public:
     */
     Graph(const Graph &other):_headN(nullptr), matrix(nullptr), num_nodes(0), num_edges(0){
 
-        // Delego il lavoro alla funzione add utilizzando un meccanismo di error recovery
         Node<T> *tmpN = other._headN;
 
         try
@@ -272,7 +270,11 @@ public:
                 tmpN = tmpN -> _next;
             }
 
-
+            for(int i = 0; i< num_nodes; i++){
+                for(int j = 0; j<num_nodes; j++) {
+                    this -> matrix[i][j] = other.matrix[i][j];
+                }
+            }
 
         }
         catch(...)
@@ -452,41 +454,17 @@ public:
    Stampa la matrice di adiacenza per semplificare i controlli
 
    */
-    void print_matrix() {
+    ostream& print_matrix(ostream& os) {
 
-        if (matrix == nullptr) return;
-
-        const_iterator i = begin();
-
-        std::cout<<"\t";
-        /*
-        for ( ; i!= end(); i++){
-            std::cout<<i -> _data<<"\t";
-        }
-        std::cout<<endl;
-        */
-
-        Node<T> *temp = _headN;
-        while (temp != nullptr) {
-            std::cout<<temp -> _data<<"\t";
-            temp = temp -> _next;
-        }
-
-        i= begin();
+        if (matrix == nullptr) return os;
 
         for(int k = 0; k < num_nodes; k++){
-
-            if (i != end()){
-                std::cout<<i -> _data<<"\t";
-                i++;
-            }
-
             for (int j = 0; j<num_nodes; j++ ){
-                std::cout<<matrix[k][j]<<"\t";
+                os<<matrix[k][j]<<"\t";
             }
-            std::cout<<endl;
+            os<<endl;
         }
-
+        return os;
     }
 
     /**
