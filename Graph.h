@@ -56,8 +56,7 @@ private:
     @param value2 dato elementare T del nodo sorgente dell'arco che cerco
     @return puntatore al relativo arco, se esistente
     */
-    int find_E_helper(const T &value1, const T &value2) const{
-
+    int find_E_helper(const T &value1, const T &value2) const {
         return matrix[getNodeIndex(value1)][getNodeIndex(value2)];
     }
 
@@ -91,11 +90,11 @@ private:
     METODO AUSILIARIO
     Pulisce la memoria allocata da nodi e archi.
     */
-    void clear(){
+    void clear() {
 
         // Cancello i nodi
         Node<T> *tmpN = _headN;
-        Node<T> *tmpN2 = nullptr;
+        Node<T> *tmpN2 = nullptr; ///TODO: CORREGGI
 
         while(tmpN!=nullptr) {
 
@@ -103,8 +102,6 @@ private:
             delete tmpN;
             tmpN = tmpN2;
         }
-
-
 
         // Cancella la matrice
         for(int i=0;i<num_nodes;i++)
@@ -140,10 +137,11 @@ private:
             for(int i=0;i<new_num_nodes;i++)
                 matrix[i] = new bool[new_num_nodes];
         } else {
-            bool **newMatrix = new bool* [new_num_nodes];
+
+            bool **newMatrix = new bool* [new_num_nodes]();
 
             for(int i=0;i<new_num_nodes;i++)
-                newMatrix[i] = new bool[new_num_nodes];
+                newMatrix[i] = new bool[new_num_nodes]();
 
            int num = std::min(num_nodes,new_num_nodes);
 
@@ -199,7 +197,7 @@ private:
 
     /**
     METODO AUSILIARIO
-    Rimuove i dati dulle adiacenze di un nodo dalla matrice.
+    Rimuove i dati sulle adiacenze di un nodo dalla matrice.
     @param node: posizione del nodo da rimuovere
     */
 
@@ -233,6 +231,8 @@ private:
     }
 
 public:
+
+
 
     friend ostream& operator<<(ostream& os, Graph<T>g ) {
         return g.print_matrix(os);
@@ -563,6 +563,7 @@ public:
             return tmp;					//ritorno il vecchio stato
         }
 
+
         /**
         OPERATOR++ di iterazione pre-incremento di iteratore forward
         @return puntatore allo stato nuovo
@@ -607,7 +608,7 @@ public:
     }; // end class const_iterator
 
     /**
-    ME'TODO PUBBLICO
+    METODO PUBBLICO
     Restituisce un const_iterator alla testa della lista dei nodi del grafo
     @return iteratore alla testa
     */
