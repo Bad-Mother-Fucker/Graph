@@ -336,8 +336,10 @@ public:
                 }else{
 
                     Node<T> *tmp = _headN;
-                    _headN = new Node<T>(value);
-                    _headN -> _next = tmp;
+                    while(tmp->_next) {
+                        tmp = tmp->_next;
+                    }
+                    tmp->_next = new Node<T>(value);
                     reallocMatrix(num_nodes+1);
                 }
 
@@ -460,7 +462,7 @@ public:
 
         for(int k = 0; k < num_nodes; k++){
             for (int j = 0; j<num_nodes; j++ ){
-                os<<matrix[k][j]<<"\t";
+                os<<matrix[k][j]<<"  ";
             }
             os<<endl;
         }
@@ -476,7 +478,7 @@ public:
 
     private:
 
-        const Node<T>* n;			///< puntatore al nodo contenente il dato "puntato" dall'iteratore
+        const Node<T>* n;	 ///< puntatore al nodo contenente il dato "puntato" dall'iteratore
         friend class Graph;		///< classe padre
 
         /**

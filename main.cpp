@@ -18,28 +18,32 @@ void test_int(){
     Graph<int> g;
 
     try{
-        std::cout << "Aggiunta dei nodi 0,5,7,6..." << std::endl;
-        g.add_node(0);
-        g.add_node(5);
-        g.add_node(7);
-        g.add_node(6);
-        g.add_node(2);
+        std::cout << "Aggiunta dei nodi 1,2,3,4,5,6..." << std::endl;
         g.add_node(1);
+        g.add_node(2);
         g.add_node(3);
-        std::cout << "Aggiunta di un ulteriore nodo 0..." << std::endl;
-        g.add_node(0); // Genera eccezione
+        g.add_node(4);
+        g.add_node(5);
+        g.add_node(6);
+        std::cout << "Aggiunta di un ulteriore nodo 1..." << std::endl;
+        g.add_node(1); // Genera eccezione
     }
     catch(duplicated_node &e){
         std::cout << e.what() << std::endl;
     }
 
     try{
-        std::cout << "Aggiunta degli archi <5,7>,<0,0>,<0,6>..." << std::endl;
-        g.add_edge(5,7);
-        g.add_edge(2,1);
-        g.add_edge(3,6);
-        std::cout << "Aggiunta di un ulteriore arco <7,5>..." << std::endl;
-        g.add_edge(7,5); // Genera eccezione
+        std::cout << "Aggiunta degli archi <1,2>,<1,3>,<3,4>..." << std::endl;
+        g.add_edge(1,2);
+        g.add_edge(2,4);
+        g.add_edge(1,3);
+        g.add_edge(3,4);
+        g.add_edge(3,5);
+        g.add_edge(5,5);
+        g.add_edge(5,6);
+        g.add_edge(4,6);
+        std::cout << "Aggiunta di un ulteriore arco <1,2>..." << std::endl;
+        g.add_edge(1,2); // Genera eccezione
     }
     catch(duplicated_edge &e){
         std::cout << e.what() << std::endl;
@@ -52,11 +56,10 @@ void test_int(){
 
 
     try{
-        std::cout << "Test di esistenza di <0,0>,<5,7>,<7,5>,<6,5>..." << std::endl;
-        g.has_edge(0,0);
-        g.has_edge(5,7);
-        g.has_edge(7,5);
-        g.has_edge(6,5);
+        std::cout << "Test di esistenza di <1,2>,<1,3>,<3,4>..." << std::endl;
+        g.has_edge(1,2);
+        g.has_edge(1,3);
+        g.has_edge(3,4);
         std::cout << "Test di esistenza di <0,90>..." << std::endl;
         g.has_edge(0,90); // Genera eccezione
     }
@@ -78,9 +81,9 @@ void test_int(){
     try{
         std::cout << "Test rimozione di 5..." << std::endl;
         g.remove_node(5);
-        std::cout << "Test esistenza di 5 e di <5,7>..." << std::endl;
+        std::cout << "Test esistenza di 5 e di <5,6>..." << std::endl;
         g.exists(5);
-        g.has_edge(5,7); // Genera eccezione
+        g.has_edge(5,6); // Genera eccezione
     }
     catch(key_not_found &e){
         std::cout << e.what() << std::endl;
@@ -98,9 +101,9 @@ void test_int(){
 
 
     try{
-        std::cout << "Test rimozione di <0,6> e di esistenza successiva..." << std::endl;
-        g.remove_edge(0, 6);
-        g.has_edge(0,6);
+        std::cout << "Test rimozione di <5,6> e di esistenza successiva..." << std::endl;
+        g.remove_edge(5, 6);
+        g.has_edge(5,6);
         std::cout << "Test rimozione di <90,70>..." << std::endl;
         g.remove_edge(90, 70); // Genera eccezione
     }
@@ -245,8 +248,8 @@ int main(int argc, char* argv[]){
 
     /* Test sugli interi */
 
-    //test_int();
-    test_custom();
+    test_int();
+   //test_custom();
 
     std::cout << std::endl;
 
