@@ -564,7 +564,7 @@ public:
 
             if(n==nullptr) throw bad_iterator("EXCEPTION: impossibile incrementare un iteratore nullo!");
             const_iterator tmp(*this);	//vecchio stato
-            n = n -> _next; 			//cambio lo stato corrente
+            n++;     			//cambio lo stato corrente
             return tmp;					//ritorno il vecchio stato
         }
 
@@ -577,7 +577,7 @@ public:
         const_iterator& operator++() {
 
             if(n==nullptr) throw bad_iterator("EXCEPTION: impossibile incrementare un iteratore nullo!");
-            n = n -> _next; //cambio lo stato corrente
+            n++; //cambio lo stato corrente
             return *this;	//ritorno il nuovo stato
         }
 
