@@ -32,6 +32,7 @@ void test_int(){
         std::cout << e.what() << std::endl;
     }
 
+
     try{
         std::cout << "Aggiunta degli archi <1,2>,<1,3>,<3,4>..." << std::endl;
         g.add_edge(1,2);
@@ -48,6 +49,8 @@ void test_int(){
     catch(duplicated_edge &e){
         std::cout << e.what() << std::endl;
     }
+
+
 
     std::cout << "Test di esistenza di 5 e 90..." << std::endl;
     g.exists(5);

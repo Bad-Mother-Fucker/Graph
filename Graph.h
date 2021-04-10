@@ -23,7 +23,8 @@ private:
     typedef unsigned int size_type; ///< Tipo che definisce il numero dei nodi e degli archi
 
     // DATI MEMBRO DEL GRAFO
-    Node<T>* _headN; ///< testa della lista dei nodi
+    //Node<T>* _headN; ///< testa della lista dei nodi
+    Node<T> *nodes;
     bool** matrix; ///< Matrice di adiacenza del grafo
     size_type num_nodes; ///< numero di nodi
     size_type num_edges; ///< numero di archi
@@ -35,17 +36,13 @@ private:
     @return puntatore al relativo nodo, se esistente
     */
     Node<T>* find_N_helper(const T &value) const{
-
-        Node<T> *tmp = _headN;
-
-        while(tmp!=0) {
-
-            if(tmp -> _data == value)
+        if (nodes == nullptr) return nullptr;
+        for(int i =0 ; i < num_nodes ; i++){
+            if (nodes[i]._data == value) {
+                Node<T> * tmp = &nodes[i];
                 return tmp;
-
-            tmp = tmp -> _next;
+            }
         }
-
         return nullptr;
     }
 
@@ -93,15 +90,7 @@ private:
     void clear() {
 
         // Cancello i nodi
-        Node<T> *tmpN = _headN;
-        Node<T> *tmpN2 = nullptr; ///TODO: CORREGGI
-
-        while(tmpN!=nullptr) {
-
-            tmpN2 = tmpN -> _next;
-            delete tmpN;
-            tmpN = tmpN2;
-        }
+       delete[] nodes;
 
         // Cancella la matrice
         for(int i=0;i<num_nodes;i++)
@@ -123,6 +112,29 @@ private:
         matrix[getNodeIndex(value1)][getNodeIndex(value2)] = false;
 
     }
+    /**
+   METODO AUSILIARIO
+   Ridimensiona il vettore di nodi.
+   @param new_num_nodes la nuova dimensione
+
+   */
+
+    void reallocVector(size_type new_num_nodes) {
+        if(nodes == nullptr){
+            nodes = new Node<T>[new_num_nodes]();
+        } else {
+            Node<T>* newVector = new Node<T>[new_num_nodes]();
+            int num = std::min(num_nodes,new_num_nodes);
+            for(int j = 0; j< num; j++) {
+                newVector[j] = nodes[j];
+            }
+            delete []  nodes;
+
+            nodes = newVector;
+
+        }
+    }
+
 
     /**
     METODO AUSILIARIO
@@ -133,9 +145,9 @@ private:
     void reallocMatrix(size_type new_num_nodes) {
 
         if (matrix == nullptr) {
-            matrix = new bool* [new_num_nodes];
+            matrix = new bool* [new_num_nodes]();
             for(int i=0;i<new_num_nodes;i++)
-                matrix[i] = new bool[new_num_nodes];
+                matrix[i] = new bool[new_num_nodes]();
         } else {
 
             bool **newMatrix = new bool* [new_num_nodes]();
@@ -179,20 +191,27 @@ private:
    @returns l'indice della matrice indicante il nodo in questione
    */
    int getNodeIndex(const T &val) const {
-        int index=0;
 
-        Node<T> *tmp = _headN;
 
-        while(tmp!=0){
+        if (nodes == nullptr) return -1;
 
-            if(tmp -> _data == val)
-                return index;
-            index++;
-
-            tmp = tmp -> _next;
+        for (int i = 0; i< num_nodes; i++) {
+            if (nodes[i]._data == val) {
+                return i;
+            }
         }
 
         return -1;
+   }
+
+
+   void update_vector(const int & index) {
+
+       for (int i = index; i < num_nodes; i++) {
+           nodes[i] = nodes[i+1];
+       }
+       reallocVector(num_nodes-1);
+
    }
 
     /**
@@ -214,7 +233,7 @@ private:
         }
 
         reallocMatrix(num_nodes-1);
-        num_nodes--;
+
 
     }
 
@@ -234,14 +253,14 @@ public:
 
 
 
-    friend ostream& operator<<(ostream& os, Graph<T>g ) {
+    friend ostream& operator<<(ostream& os, Graph<T> g ) {
         return g.print_matrix(os);
     }
 
     /**
     COSTRUTTORE DI DEFAULT di un grafo
     */
-    Graph(): _headN(nullptr), num_nodes(0), num_edges(0), matrix(nullptr){
+    Graph(): nodes(nullptr), num_nodes(0), num_edges(0), matrix(nullptr){
     }
 
 
@@ -258,30 +277,22 @@ public:
     @param other grafo da cui copiare this
     @throw ... nel caso in cui qualche new fallisca
     */
-    Graph(const Graph &other):_headN(nullptr), matrix(nullptr), num_nodes(0), num_edges(0){
+    Graph(const Graph &other): nodes(nullptr), matrix(nullptr), num_nodes(other.num_nodes), num_edges(other.num_edges){
 
-        Node<T> *tmpN = other._headN;
+            reallocVector(other.num_nodes);
+            reallocMatrix(other.num_nodes);
 
-        try
-        {
-            while(tmpN!=0)
-            {
-                add_node(tmpN -> _data);
-                tmpN = tmpN -> _next;
+            for(int j = 0; j<other.num_nodes; j++) {
+                this -> nodes[j] = other.nodes[j];
             }
 
-            for(int i = 0; i< num_nodes; i++){
-                for(int j = 0; j<num_nodes; j++) {
+            for(int i = 0; i< other.num_nodes; i++){
+                for(int j = 0; j<other.num_nodes; j++) {
                     this -> matrix[i][j] = other.matrix[i][j];
                 }
             }
 
-        }
-        catch(...)
-        {
-            clear(); // Riporto l'oggetto in uno stato coerente
-            throw;
-        }
+
     }
 
     /**
@@ -330,20 +341,19 @@ public:
 
             try{
 
-                if(_headN==nullptr) {
-                    _headN = new Node<T>(value); /// Lo aggiungo all'insieme dei nodi
+                if(nodes==nullptr) {
+                    reallocVector(num_nodes +1);
                     reallocMatrix(num_nodes+1);
+
                 }else{
 
-                    Node<T> *tmp = _headN;
-                    while(tmp->_next) {
-                        tmp = tmp->_next;
-                    }
-                    tmp->_next = new Node<T>(value);
+                    reallocVector(num_nodes+1);
                     reallocMatrix(num_nodes+1);
                 }
 
-                num_nodes++;
+
+
+                nodes[num_nodes++]._data = value;
             }
             catch(std::bad_alloc &e){
                 std::cout << e.what() << std::endl;
@@ -364,22 +374,15 @@ public:
 
             int id=0;
             ///Rimuovo dall'insieme dei nodi
-            Node<T>* tmp = _headN;
-            if(tmp -> _data == value){
-                _headN = tmp -> _next;
-                delete tmp;
-            }
-            else{
-                while(tmp -> _next -> _data != value){
-                    Node<T>* tmp2 = tmp -> _next;
-                    tmp = tmp2;
-                    id++;
+            for(int i = 0; i< num_nodes; i++){
+                if (nodes[i]._data == value){
+                    id = i;
+                    break;
                 }
-                Node<T>* tmp2 = tmp -> _next;
-                std::swap(tmp -> _next, tmp2 -> _next);
-                delete tmp2;
             }
+            update_vector(id);
             update_matrix(id);
+            num_nodes--;
         }
         else throw key_not_found("EXCEPTION: Impossibile rimuovere un nodo inesistente!");
     }
@@ -615,7 +618,7 @@ public:
     @return iteratore alla testa
     */
     const_iterator begin() const{
-        return const_iterator(_headN);
+        return const_iterator(nodes);
     }
 
     /**

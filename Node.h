@@ -23,26 +23,25 @@ private:
     */
     void swap(Node &other){
         std::swap(this -> _data, other._data);
-        std::swap(this -> _next, other._next);
+
     }
 
 public:
 
     // DATI MEMBRO del nodo
     T _data; 		///< dato elementare di tipo T
-    Node* _next;	///< puntatore al nodo successivo
 
     /**
     COSTRUTTORE DI DEFAULT di un nodo
     */
-    Node () : _data(nullptr), _next(nullptr){
+    Node () : _data(0){
     }
 
     /**
     Costruttore del nodo dato un elemento
     @param other dato elementare di tipo T che identifica il nodo
     */
-    explicit Node(const T &other) : _data(other), _next(nullptr){
+    explicit Node(const T &other) : _data(other){
     }
 
     /**
@@ -55,7 +54,7 @@ public:
     COPY CONSTRUCTOR di un nodo
     @param other nodo da cui copiare this
     */
-    Node(const Node &other) : _data(other._data), _next(other._next){
+    Node(const Node &other) : _data(other._data){
     }
 
     /**
